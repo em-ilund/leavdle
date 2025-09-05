@@ -9,6 +9,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Flask instance folder (runtime data)
+instance/
+*.db
+
 # Ignore distribution / packaging
 .Python
 build/
