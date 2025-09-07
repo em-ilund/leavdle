@@ -2,6 +2,7 @@ from . import db, create_app
 from datetime import date
 from flask import Blueprint, render_template, request
 from .models import Sketches, Lines
+from .helpers import get_daily_lines
 
 bp = Blueprint('main', __name__)
 
@@ -12,9 +13,10 @@ def index():
         return 'POST received'
 
     if request.method == 'GET':
-        # A line from a sketch is presented
-        # The user gets to guess which sketch it's from
-        # After guessing, the correct answer is revealed, and they get to guess a new line
-        # Repeat 5 times, then show score
+
+        daily_lines = get_daily_lines()
+
+        from leavdle.models import Sketches
+        sketches = Sketches.query.all()
         
-        return render_template('index.html')
+        return render_template('index.html', sketches=sketches, daily_lines=daily_lines)

@@ -29,8 +29,8 @@ def create_app():
 
     @app.shell_context_processor
     def make_shell_context():
-        from .models import Sketches, Lines
-        return {"db": db, "Sketches": Sketches, "Lines": Lines}
+        from .models import Sketches, Lines, LineHistory
+        return {"db": db, "Sketches": Sketches, "Lines": Lines, "History": LineHistory}
 
 
     return app

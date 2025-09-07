@@ -12,3 +12,10 @@ class Lines(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sketch_id = db.Column(db.Integer, db.ForeignKey('sketches.id'), nullable=False)
     line_text = db.Column(db.String, nullable=False)
+
+# Table containing a history of which lines have been used
+class LineHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    line_id = db.Column(db.Integer, db.ForeignKey('lines.id'), nullable=False, unique=True)
+    date = db.Column(db.Date, nullable=False, index=True)
+    line = db.Relationship("Lines")
