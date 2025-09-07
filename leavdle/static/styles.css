@@ -1,0 +1,43 @@
+html {
+    background-color: #333;
+}
+
+body {
+    font-family: 'Montserrat';
+    margin-left: 320px;
+    margin-right: 320px;
+    padding: 50 px;
+    background-color: #BBB;
+}
+
+main {
+    background-color: #f4f4f4;
+}
+
+#line_container {
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    font-size: 34px;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    border-bottom: 2px solid #555;
+}
+
+h3 {
+    color: #555;
+    text-align: center;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  -ms-transform: translate(-50%, 0%);
+  transform: translate(-50%, 0%);
+}
