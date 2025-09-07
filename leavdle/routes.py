@@ -1,11 +1,11 @@
 from . import db, create_app
 from datetime import date
-from flask import render_template, request
+from flask import Blueprint, render_template, request
 from .models import Sketches, Lines
 
-app = create_app()
+bp = Blueprint('main', __name__)
 
-@app.route('/', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         # A guess has been submitted
