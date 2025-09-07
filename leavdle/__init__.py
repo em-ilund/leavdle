@@ -5,16 +5,16 @@ import os
 
 db = SQLAlchemy()
 
+def create_app():
+    app = Flask(__name__, instance_relative_config=True)
+    # Load configs
+    app.config.from_object('leavdle.config.Config') # Load main config
+    app.config.from_pyfile('config.py', silent=True)  # Load instance config if it exists
 
-app = Flask(__name__, instance_relative_config=True)
+    db.init_app(app)
+    return app
 
-
-# Load configs
-app.config.from_object('config') # Load main config
-app.config.from_pyfile('config.py', silent=True)  # Load instance config if it exists
-
-
-db.init_app(app)
+app = create_app()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -29,7 +29,9 @@ def index():
         # Repeat 5 times, then show score
         
         return render_template('index.html')
-
+    
+if __name__ == '__main__':
+    app.run(debug=True)
 
 # Run once to set up DB tables
 @app.cli.command("init-db")

@@ -1,6 +1,12 @@
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 import json
-from app import db, app
-from models import Sketches, Lines
+from leavdle import create_app, db
+from leavdle.models import Sketches, Lines
+
+app = create_app()
 
 def seed_from_json(filepath):
     with open(filepath) as f:
@@ -19,5 +25,7 @@ def seed_from_json(filepath):
     print("Database seeded from", filepath)
 
 if __name__ == '__main__':
-    with app.app_context():
-        seed_from_json('sketches.json')
+    path = Path(__file__).resolve().parents[1] / 'data' / 'sketches.json'
+    if path.exists():
+        with app.app_context():
+            seed_from_json(path)

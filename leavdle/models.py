@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
-from app import db
+from leavdle import db
 
 # Table containing every I Think You Should Leave sketch title
 class Sketches(db.Model):
