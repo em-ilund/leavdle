@@ -18,5 +18,7 @@ def index():
 
         from leavdle.models import Sketches
         sketches = Sketches.query.all()
+
+        count = list(range(1, 6))
         
-        return render_template('index.html', sketches=sketches, daily_lines=daily_lines)
+        return render_template('index.html', sketches=sketches, daily_lines=daily_lines, count=count)

@@ -2,35 +2,40 @@
 <html lang="en">
     <head>
         <link rel="stylesheet" href="/static/styles.css">
-        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/slim-select@2.7.1/dist/slimselect.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/slim-select@2.7.1/dist/slimselect.min.js"></script>
         <script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
         <title>Leavdle</title>
     </head>
     <body>
         <header>
             <div id="title_container">
-                <h1>LEAVDLE</h1>
+                <h1>Leavdle</h1>
             </div>
+            <hr>
         </header>
         <main>
+            <h3 id="line_count">Line {{ count[0] }}/5</h3>
             <div id="line_container">
                 <p class="line">{{ daily_lines[0].line_text }}</p>
             </div>
-                <form action="/guess" method="post">
-                    <div id="dropdown_container"></div>
-                        <select autocomplete="off" id="sketch_select" name="sketch_name" required>
-                            <option value="" disabled selected>Select a sketch</option>
-                            {% for sketch in sketches %}
-                            <option value="{{ sketch.sketch_name }}">{{ sketch.sketch_name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="center">
-                        <button type="submit">Guess</button>
-                    </div>
-                </form>
+            <form action="/guess" method="post">
+                <div id="dropdown_container">
+                    <select autocomplete="off" id="sketch_select" name="sketch_name" required>
+                        <option value="" disabled selected>Select a sketch</option>
+                        {% for sketch in sketches %}
+                        <option value="{{ sketch.sketch_name }}">{{ sketch.sketch_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="center">
+                    <button id="submit_button" type="submit">Guess</button>
+                </div>
+            </form>
         </main>
+        <footer>
+            <hr>
+            <h3 id="how_to_play">Guess which <i>I Think You Should Leave</i> sketch<br>the randomly selected line is from!</h3>
+        </footer>
     </body>
 </html>
