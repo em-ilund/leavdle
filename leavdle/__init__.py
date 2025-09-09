@@ -9,7 +9,6 @@ def create_app():
     app.config.from_object('leavdle.config.Config') # Load main config
     app.config.from_pyfile('config.py', silent=True)  # Load instance config if it exists
 
-
     db.init_app(app)
 
 

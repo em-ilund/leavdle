@@ -5,6 +5,7 @@
         <link href="https://cdn.jsdelivr.net/npm/slim-select@2.7.1/dist/slimselect.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/slim-select@2.7.1/dist/slimselect.min.js"></script>
         <script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
         <title>Leavdle</title>
     </head>
     <body>
@@ -15,16 +16,16 @@
             <hr>
         </header>
         <main>
-            <h3 id="line_count">Line {{ count[0] }}/5</h3>
+            <h3 id="line_count"></h3>
             <div id="line_container">
-                <p class="line">{{ daily_lines[0].line_text }}</p>
+                <p id="line"></p>
             </div>
             <form action="/guess" method="post">
                 <div id="dropdown_container">
-                    <select autocomplete="off" id="sketch_select" name="sketch_name" required>
+                    <select autocomplete="off" id="sketch_select" name="sketch_guess" required>
                         <option value="" disabled selected>Select a sketch</option>
                         {% for sketch in sketches %}
-                        <option value="{{ sketch.sketch_name }}">{{ sketch.sketch_name }}</option>
+                        <option value="{{ sketch.id }}">{{ sketch.sketch_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -35,7 +36,7 @@
         </main>
         <footer>
             <hr>
-            <h3 id="how_to_play">Guess which <i>I Think You Should Leave</i> sketch<br>the randomly selected line is from!</h3>
+            <h3 id="how_to_play">Guess which <i>I Think You Should Leave</i> sketch<br>the randomly selected quote is from!</h3>
         </footer>
     </body>
 </html>
