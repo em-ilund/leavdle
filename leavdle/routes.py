@@ -7,6 +7,7 @@ from .helpers import get_daily_lines
 
 bp = Blueprint('main', __name__)
 
+
 @bp.route('/')
 def index():
 
@@ -23,15 +24,14 @@ def index():
         return render_template('index.html', sketches=sketches)
 
 
-@bp.route('/get_next_line', methods=['POST'])
-def check_answer():
-
-    daily_lines = get_daily_lines()
-
-
 @bp.route('/get_content')
 def get_content():
     #probably dont even the sketch relationship
     daily_lines = get_daily_lines()
     lines_list = [line.to_dict() for line in daily_lines]
     return jsonify(lines_list)
+
+
+@bp.route('/get_game_date')
+def get_game_date():
+    return(str(date.today()))
