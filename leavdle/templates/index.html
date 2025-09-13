@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <link rel="icon" type="image/x-icon" href="/static/favicon.ico.PNG">
         <link rel="stylesheet" href="/static/styles.css">
         <link href="https://cdn.jsdelivr.net/npm/slim-select@2.7.1/dist/slimselect.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/slim-select@2.7.1/dist/slimselect.min.js"></script>
         <script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
         <title>Leavdle</title>
     </head>
     <body>
+        <audio id="victory">
+            <source src="{{ url_for('static', filename='audio/itysl_victory.ogg') }}" type="audio/ogg">
+            <source src="{{ url_for('static', filename='audio/itysl_victory.mp3') }}" type="audio/mpeg">
+        </audio>
         <header>
             <div id="title_container">
                 <h1>Leavdle</h1>
@@ -17,13 +22,27 @@
         </header>
         <main>
             <h3 id="line_count"></h3>
-            <div id="line_container">
-                <p id="line"></p>
+            <div id="guess_tracker">
+                <div class="box"></div>
+                <div class="box"></div>
+                <div class="box"></div>
+                <div class="box"></div>
+                <div class="box"></div>
             </div>
+            <div id="line_container">
+                <p id="line"></p>   
+                <div id="countdown">
+                    <div id='tiles' class="color-full"></div>
+                </div>
+            </div>
+                <div id="stats_container">
+                    <p id="stats_title">Correct answers</p>
+                    <hr><br>
+                    <p id="stats"></p>
+                </div>
             <form id="form">
                 <div id="dropdown_container">
-                    <select autocomplete="off" id="sketch_select" name="sketch_guess" required>
-                        <option value="" disabled selected>Select a sketch</option>
+                    <select autocomplete="off" id="sketch_select" name="sketch_guess">
                         {% for sketch in sketches %}
                         <option value="{{ sketch.id }}">{{ sketch.sketch_name }}</option>
                         {% endfor %}
@@ -36,7 +55,9 @@
         </main>
         <footer>
             <hr>
-            <h3 id="how_to_play">Guess which <i>I Think You Should Leave</i> sketch<br>the randomly selected quote is from!</h3>
+            <h3 class="footer">Guess which <i>I Think You Should Leave</i> sketch<br>the randomly selected quote is from!</h3>
+            <hr>
+            <h3 class="footer" id="source">Sketch titles obtained from <a href="https://www.netflix.com/tudum/articles/i-think-you-should-leave-sketch-names">netflix.com/tudum/articles/i-think-you-should-leave-sketch-names</a></h3>
         </footer>
     </body>
 </html>

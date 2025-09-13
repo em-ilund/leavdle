@@ -44,9 +44,25 @@ h1 {
 }
 
 #line_count {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     padding: 0;
     font-style: normal;
+}
+
+#guess_tracker {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.box {
+  height: 25px;
+  width: 25px;
+  z-index: 9999;
+  background-color: grey;
+  margin: 7px;
+  border: 2px solid white;
+  border-radius: 7px;
 }
 
 #line_container {
@@ -60,6 +76,39 @@ h1 {
     border-color: white;
     box-shadow: 2px 5px 10px rgba(38, 31, 73, 0.611);
     background-image: linear-gradient(90deg, rgb(60, 33, 102), rgb(53, 31, 104), rgb(48, 36, 119), rgb(70, 43, 143))
+}
+
+#stats_container {
+    text-align: center;
+    border-radius: 25px;
+    background: #b78665;
+    padding: 20px;
+    width: 500px;
+    margin: 0px auto;
+    margin-top: 25px;
+    border-style: solid;
+    border-color: white;
+    box-shadow: 2px 5px 10px rgba(38, 31, 73, 0.611);
+    background-image: linear-gradient(90deg, rgb(60, 33, 102), rgb(53, 31, 104), rgb(48, 36, 119), rgb(70, 43, 143))
+}
+
+#stats_title {
+  text-align: center;
+  font-style: normal;
+  color: white;
+  font-size: 20px;
+  font-style: normal;
+}
+
+#stats {
+  text-align: left;
+  font-style: normal;
+}
+
+#countdown {
+  color: white;
+  font-style: normal;
+  font-size: 50px;
 }
 
 p {
@@ -164,10 +213,13 @@ footer {
     margin-top:200px;
 }
 
-#how_to_play {
+.footer {
     margin-top: 10px;
     font-style: normal;
     font-size: 15px;
     line-height: 1.5;
 }
 
+#source {
+  font-size: 13px;
+}
