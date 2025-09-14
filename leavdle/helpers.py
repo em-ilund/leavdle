@@ -4,6 +4,7 @@ from .models import Sketches, Lines, LineHistory
 from . import db
 import logging
 
+
 def reduce_history_entries():
     KEPT_HISTORY = 100
     MAX_HISTORY = 500
@@ -34,14 +35,12 @@ def get_daily_lines():
     # Purge oldest entries to the history table if getting full
     reduce_history_entries()
 
-
     LINE_AMOUNT = 5
     chosen_lines = []
     insufficient_data = False
     used_sketches = set()
     used_line_ids = {entry.line_id for entry in LineHistory.query.all()}
     available_sketches = Sketches.query.count()
-
 
     while len(chosen_lines) < LINE_AMOUNT:
         # Pick a random sketch not already used today
@@ -70,7 +69,6 @@ def get_daily_lines():
         if len(used_sketches) >= available_sketches:
             insufficient_data = True
             break
-    
 
     # Fallback if line selection fails somehow
     if insufficient_data:
@@ -79,7 +77,10 @@ def get_daily_lines():
         chosen_lines = (
             Lines.query.order_by(func.random()).limit(LINE_AMOUNT).all()
         )
-        logging.warning(f"Not enough data, lines were selected without constraints.")
+        logging.warning("""
+                        Not enough data,
+                        lines were selected without constraints.
+                        """)
 
         # Add to history table if no conflicting line id
         for line in chosen_lines:
@@ -88,7 +89,6 @@ def get_daily_lines():
         db.session.commit()
 
         return chosen_lines
-
 
     # Update LineHistory
     for line in chosen_lines:

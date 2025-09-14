@@ -1,10 +1,11 @@
+// Game state variables
 let gameDate = localStorage.getItem('gameDate') || null;
-let currentIndex = parseInt(localStorage.getItem('guessIndex', 10)) || 0;
-let score = parseInt(localStorage.getItem('score', 10)) || 0;
-let winStreak = parseInt(localStorage.getItem('winStreak', 10)) || 0;
+let currentIndex = parseInt(localStorage.getItem('guessIndex'), 10) || 0;
+let score = parseInt(localStorage.getItem('score'), 10) || 0;
+let winStreak = parseInt(localStorage.getItem('winStreak'), 10) || 0;
 
 function getJSON(key, defaultValue) {
-    item = localStorage.getItem(key);
+    let item = localStorage.getItem(key);
     if (!item) {
         return defaultValue;
     }
@@ -20,10 +21,10 @@ function setBoxColors() {
     let boxes = document.getElementsByClassName('box');
     for (let i = 0; i < boxes.length; i++) {
         if (boxColors[i]) {
-            boxes[i].style.backgroundColor = boxColors[i];
+            if (boxes[i]) boxes[i].style.backgroundColor = boxColors[i];
         }
         else {
-            boxes[i].style.backgroundColor = 'grey';
+            if (boxes[i]) boxes[i].style.backgroundColor = 'grey';
         }
     }
 }
@@ -33,6 +34,7 @@ let today = null;
 let streak = Number(winStreak);
 
 
+// Get today's ITYSL quotes
 async function loadLines() {
     if (lines != null) return lines;
     try {
@@ -48,107 +50,103 @@ async function loadLines() {
 }
 
 
-async function getDate() {
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear();
-
-    today = mm + '/' + dd + '/' + yyyy;
-
-    return today;
+function $(id) {
+    return document.getElementById(id);
 }
 
 
-// Countdown from Mark Nelson at https://codepen.io/marknelson/pen/XJBapX
+function getDate() {
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2, '0');
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const yyyy = now.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+}
+
+
+let countdownInterval = null;
+
 function displayCountdown() {
-    var today = new Date();
+    const tiles = document.getElementById('tiles');
+    if (!tiles) return;
 
-    var tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0,0,0,0);
+    // compute next local midnight
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0, 0);
 
-    var diffMs = (tomorrow - today); // milliseconds between now & Christmas
-    var minutes = Math.floor((diffMs/1000)/60);
+    const targetDate = tomorrow.getTime();        // timestamp of next midnight
+    const timeLimit = targetDate - now.getTime(); // total ms until target at function start
 
-    countdown(minutes);
-
-
-    //alert(diffDays + " days, " + diffHrs + " hours, " + diffMins + " minutes until Christmas 2015 =)");
-
-    function countdown(minutes) {
-
-        var target_date = new Date().getTime() + ((minutes * 60 ) * 1000); // set the countdown date
-        var time_limit = ((minutes * 60 ) * 1000);
-        //set actual timer
-        /*setTimeout(
-            function() 
-            {
-            alert( 'done' );
-            }, time_limit );*/
-
-        var days, hours, mins, seconds; // variables for time units
-
-        var tiles = document.getElementById("tiles"); // get tag element
-
-        getCountdown();
-
-        setInterval(function () { getCountdown(); }, 1000);
-
-        function getCountdown() {
-
-            // find the amount of "seconds" between now and target
-            var current_date = new Date().getTime();
-            var seconds_left = (target_date - current_date) / 1000;
-
-            if ( seconds_left >= 0 ) {
-                if ( (seconds_left * 1000 ) < ( time_limit / 2 ) )  {
-                $( '#tiles' ).removeClass('color-full');
-                $( '#tiles' ).addClass('color-half');
-
-                } 
-                if ( (seconds_left * 1000 ) < ( time_limit / 4 ) )  {
-                    $( '#tiles' ).removeClass('color-half');
-                    $( '#tiles' ).addClass('color-empty');
-                }
-
-                days = pad( parseInt(seconds_left / 86400) );
-                seconds_left = seconds_left % 86400;
-
-                hours = pad( parseInt(seconds_left / 3600) );
-                seconds_left = seconds_left % 3600;
-
-                mins = pad( parseInt(seconds_left / 60) );
-                seconds = pad( parseInt( seconds_left % 60 ) );
-
-                // format countdown string + set tag value
-                tiles.innerHTML = `<span>${hours}:</span><span>${mins}:</span><span>${seconds}</span>`; 
-            }
-
-        }
-
-        function pad(n) {
-            return (n < 10 ? '0' : '') + n;
-        }
+    // clear any previous interval so only one runs
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
     }
+
+    const pad = n => (n < 10 ? '0' : '') + n;
+
+    const update = () => {
+        const msLeft = targetDate - Date.now();
+
+        // If time is up, show zeros and stop the interval
+        if (msLeft <= 0) {
+            tiles.innerHTML = `<span>00:</span><span>00:</span><span>00</span>`;
+            tiles.classList.remove('color-full', 'color-half');
+            tiles.classList.add('color-empty');
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            return;
+        }
+
+        // change classes based on remaining fraction of original time
+        if (msLeft < timeLimit / 2) {
+            tiles.classList.remove('color-full');
+            tiles.classList.add('color-half');
+        } else {
+            tiles.classList.add('color-full');
+            tiles.classList.remove('color-half', 'color-empty');
+        }
+        if (msLeft < timeLimit / 4) {
+            tiles.classList.remove('color-half');
+            tiles.classList.add('color-empty');
+        }
+
+        const totalSeconds = Math.floor(msLeft / 1000);
+        const hours = pad(Math.floor(totalSeconds / 3600));
+        const mins = pad(Math.floor((totalSeconds % 3600) / 60));
+        const seconds = pad(totalSeconds % 60);
+
+        tiles.innerHTML = `<span>${hours}:</span><span>${mins}:</span><span>${seconds}</span>`;
+    };
+
+    // run once immediately, then every 1s
+    update();
+    countdownInterval = setInterval(update, 1000);
 }
 
 
 function showLine() {
+
+    currentIndex = Math.min(currentIndex, lines.length);
+
     if (!lines || lines.length === 0) {
-        document.getElementById('line').textContent = 'Error: No quotes available :('
+        if ($('line')) $('line').textContent = 'Error: No quotes available :('
         return;
     }
 
     if (currentIndex < lines.length) {
-        document.getElementById('line_count').textContent =
+        if ($('line_count')) $('line_count').textContent =
         `Quote ${currentIndex + 1}/${lines.length}`;
-        document.getElementById('line').textContent =
+        if ($('line')) $('line').textContent =
         `${lines[currentIndex].line_text}`;
 
-        document.getElementById('dropdown_container').style.display = '';
-        document.getElementById('submit_button').style.display = '';
-        document.getElementById('submit_button').disabled = false;
+        if ($('dropdown_container')) $('dropdown_container').style.display = '';
+        if ($('submit_button')) $('submit_button').style.display = '';
+        if ($('submit_button')) $('submit_button').disabled = false;
     }
     else {
         if (score == lines.length) {
@@ -160,14 +158,13 @@ function showLine() {
             localStorage.setItem('winStreak', 0);
             winStreak = 0;
         }
-        document.getElementById('line_count')
-        document.getElementById('dropdown_container').style.display = 'none';
-        document.getElementById('submit_button').style.display = 'none';
-
-        document.getElementById('line').style.fontStyle = 'normal';
-        document.getElementById('line_count').textContent = 'Stats';
-        document.getElementById('line').style.whiteSpace = 'pre-line';
-        document.getElementById('line').textContent =
+        // Set end-of-game appearance
+        if ($('dropdown_container')) $('dropdown_container').style.display = 'none';
+        if ($('submit_button')) $('submit_button').style.display = 'none';
+        if ($('line')) $('line').style.fontStyle = 'normal';
+        if ($('line_count')) $('line_count').textContent = 'Stats';
+        if ($('line')) $('line').style.whiteSpace = 'pre-line';
+        if ($('line')) $('line').textContent =
         `Score: ${score}/${lines.length} | Winning streak: ${winStreak}
         
         Time until next Leavdle:`;
@@ -179,21 +176,18 @@ function showLine() {
         html += `<strong>Quote ${i + 1}:<br></strong> "${lines[i].line_text}"<br><br>`;
         html += `<strong>Sketch:</strong> ${lines[i].sketch_name}<br><br><hr><br>`;
         }
-        document.getElementById('stats').innerHTML = html;
+        if ($('stats')) $('stats').innerHTML = html;
+        if ($('stats_container')) $('stats_container').style.display = '';
     }
 }
 
 
 async function submitGuess() {
-    const selected = document.getElementById('sketch_select');
-    if (selected.value === 'placeholder') {
-        alert("Please select a sketch!");
-        return;
-    }
-    const button = document.getElementById('submit_button');
-    button.disabled = true;
+    const button = $('submit_button');
+    if (button) button.disabled = true;
 
-    const guessId = String(selected.value);
+    const selected = $('sketch_select');
+    const guessId = selected ? String(selected.value) : '';
     guesses.push(guessId);
 
     const correctId = String(lines[currentIndex].sketch_id);
@@ -202,11 +196,11 @@ async function submitGuess() {
 
     if (guessId === correctId) {
         score++;
-        boxes[currentIndex].style.backgroundColor = '#80eb80ff';
+        if (boxes[currentIndex]) boxes[currentIndex].style.backgroundColor = '#80eb80ff';
         boxColors.push('#80eb80ff');
     }
     else {
-        boxes[currentIndex].style.backgroundColor = 'red';
+        if (boxes[currentIndex]) boxes[currentIndex].style.backgroundColor = 'red';
         boxColors.push('red');
     }
 
@@ -218,20 +212,21 @@ async function submitGuess() {
     localStorage.setItem('score', score);
 
     if (currentIndex >= lines.length && score === lines.length) {
-        document.getElementById('victory').play();
+        if ($('victory')) $('victory').play();
     }
 
     showLine();
 
-    button.disabled = false;
+    if (button) button.disabled = false;
 }
 
 
 async function init() {
     lines = await loadLines();
-    today = await getDate();
+    today = getDate();
 
     if (gameDate !== today) {
+        // Player hasn't played today's game - reset layout
         gameDate = today;
         currentIndex = 0;
         guesses = [];
@@ -240,7 +235,6 @@ async function init() {
 
         const tiles = document.getElementById("tiles");
         if (tiles) tiles.innerHTML = '';
-        document.getElementById('stats').style.display = 'none';
 
         localStorage.setItem('gameDate', today);
         localStorage.setItem('guessIndex', currentIndex);
@@ -248,13 +242,17 @@ async function init() {
         localStorage.setItem('boxColors', JSON.stringify(boxColors));
         localStorage.setItem('score', score);
     }
+    
+    if (currentIndex < lines.length) {
+        if ($('stats_container')) $('stats_container').style.display = 'none';
+    }
 
-    document.getElementById("form").addEventListener('submit', function(e) {
+    $("form").addEventListener('submit', function(e) {
         e.preventDefault();
     });
     setBoxColors();
     showLine();
-    document.getElementById('submit_button').addEventListener('click', submitGuess);
+    $('submit_button').addEventListener('click', submitGuess);
 }
 
 
