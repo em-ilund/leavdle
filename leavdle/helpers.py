@@ -1,5 +1,5 @@
 from sqlalchemy.sql import func
-from datetime import date
+from datetime import datetime, timezone
 from .models import Sketches, Lines, LineHistory
 from . import db
 import logging
@@ -19,16 +19,16 @@ def reduce_history_entries():
             .limit(1)
             .scalar()
         )
-        db.session.query(LineHistory).filter(LineHistory.id < cutoff).delete()
+        db.session.query(LineHistory).filter(LineHistory.id < cutoff).delete(synchronize_session=False)
         db.session.commit()
         print("line_history table entries reduced")
 
 
 def get_daily_lines():
 
-    today = date.today()
+    today_utc = datetime.now(timezone.utc).date()
 
-    existing_lines = LineHistory.query.filter_by(date=today).all()
+    existing_lines = LineHistory.query.filter_by(date=today_utc).all()
     if existing_lines:
         return [entry.line for entry in existing_lines]
 
@@ -85,14 +85,14 @@ def get_daily_lines():
         # Add to history table if no conflicting line id
         for line in chosen_lines:
             if line.id not in used_line_ids:
-                db.session.add(LineHistory(line_id=line.id, date=today))
+                db.session.add(LineHistory(line_id=line.id, date=today_utc))
         db.session.commit()
 
         return chosen_lines
 
     # Update LineHistory
     for line in chosen_lines:
-        db.session.add(LineHistory(line_id=line.id, date=today))
+        db.session.add(LineHistory(line_id=line.id, date=today_utc))
     db.session.commit()
 
     return chosen_lines

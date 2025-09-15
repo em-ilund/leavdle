@@ -54,13 +54,12 @@ function $(id) {
     return document.getElementById(id);
 }
 
-
 function getDate() {
     const now = new Date();
-    const dd = String(now.getDate()).padStart(2, '0');
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const yyyy = now.getFullYear();
-    return `${mm}/${dd}/${yyyy}`;
+    const dd = String(now.getUTCDate()).padStart(2, '0');
+    const mm = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const yyyy = now.getUTCFullYear();
+    return `${mm}-${dd}-${yyyy}`;
 }
 
 
@@ -70,16 +69,19 @@ function displayCountdown() {
     const tiles = document.getElementById('tiles');
     if (!tiles) return;
 
-    // compute next local midnight
     const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(now.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0, 0);
 
-    const targetDate = tomorrow.getTime();        // timestamp of next midnight
-    const timeLimit = targetDate - now.getTime(); // total ms until target at function start
+    // Compute next UTC midnight
+    const tomorrowUTC = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() + 1, // tomorrow
+        0, 0, 0, 0
+    ));
 
-    // clear any previous interval so only one runs
+    const targetDate = tomorrowUTC.getTime();        // timestamp of next UTC midnight
+    const timeLimit = targetDate - now.getTime();    // total ms until target at function start
+
     if (countdownInterval) {
         clearInterval(countdownInterval);
         countdownInterval = null;
@@ -90,19 +92,16 @@ function displayCountdown() {
     const update = () => {
         const msLeft = targetDate - Date.now();
 
-        // If time is up, show zeros and stop the interval
         if (msLeft <= 0) {
             tiles.innerHTML = `<span>00:</span><span>00:</span><span>00</span>`;
             tiles.classList.remove('color-full', 'color-half');
             tiles.classList.add('color-empty');
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                countdownInterval = null;
-            }
+            clearInterval(countdownInterval);
+            countdownInterval = null;
             return;
         }
 
-        // change classes based on remaining fraction of original time
+        // color logic same as before
         if (msLeft < timeLimit / 2) {
             tiles.classList.remove('color-full');
             tiles.classList.add('color-half');
@@ -123,7 +122,6 @@ function displayCountdown() {
         tiles.innerHTML = `<span>${hours}:</span><span>${mins}:</span><span>${seconds}</span>`;
     };
 
-    // run once immediately, then every 1s
     update();
     countdownInterval = setInterval(update, 1000);
 }
