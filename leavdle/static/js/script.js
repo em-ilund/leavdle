@@ -31,8 +31,6 @@ function setBoxColors() {
 
 let lines = null;
 let today = null;
-let streak = Number(winStreak);
-
 
 // Get today's ITYSL quotes
 async function loadLines() {
@@ -132,7 +130,8 @@ function showLine() {
     currentIndex = Math.min(currentIndex, lines.length);
 
     if (!lines || lines.length === 0) {
-        if ($('line')) $('line').textContent = 'Error: No quotes available :('
+        if ($('line')) $('line').textContent = 'Loading...';
+        if ($('line_count')) $('line_count').textContent = '';
         return;
     }
 
@@ -145,17 +144,15 @@ function showLine() {
         if ($('dropdown_container')) $('dropdown_container').style.display = '';
         if ($('submit_button')) $('submit_button').style.display = '';
         if ($('submit_button')) $('submit_button').disabled = false;
+        if ($('stats_container')) $('stats_container').style.display = 'none';
     }
     else {
         if (score == lines.length) {
-            streak++;
-            winStreak = streak;
-            localStorage.setItem('winStreak',winStreak);
-        }
-        else {
-            localStorage.setItem('winStreak', 0);
+            winStreak++;
+        } else {
             winStreak = 0;
         }
+        localStorage.setItem('winStreak', winStreak);
         // Set end-of-game appearance
         if ($('dropdown_container')) $('dropdown_container').style.display = 'none';
         if ($('submit_button')) $('submit_button').style.display = 'none';
@@ -239,6 +236,10 @@ async function init() {
         localStorage.setItem('guesses', JSON.stringify(guesses));
         localStorage.setItem('boxColors', JSON.stringify(boxColors));
         localStorage.setItem('score', score);
+
+        if ($('stats_container')) $('stats_container').style.display = 'none';
+        if ($('line_count')) $('line_count').textContent = '';
+        if ($('line')) $('line').textContent = '';
     }
     
     if (currentIndex < lines.length) {
